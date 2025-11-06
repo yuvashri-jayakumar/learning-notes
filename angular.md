@@ -199,6 +199,7 @@ When an effect runs, it tracks any signal value reads.
 Whenever any of these signal values change, the effect runs again. 
 
 **Use cases**
+
 Logging data being displayed and when it changes, either for analytics or as a debugging tool.
 
 Keeping data in sync with window.localStorage.
@@ -207,6 +208,19 @@ Adding custom DOM behavior that can't be expressed with template syntax.
 
 Performing custom rendering to a <canvas>, charting library, or other third party UI library.
 
+```
+
+Component created
+      ↓
+initializeLogging() called
+      ↓
+effect() starts watching this.count()
+      ↓
+count changes → effect re-runs automatically
+      ↓
+Component destroyed → effect is cleaned up (because injector provided)
+
+```
 
 **DYNAMIC TEMPLATES**
 
@@ -345,6 +359,87 @@ export class Receipt {
 }
 
 ```
+**INJECTION CONTEXT**
+
+In Angular, Dependency Injection (DI) works only in certain places — that environment or “scope” is called the injection context.
+
+👉 In simple words:
+
+The injection context is the place (or moment) where Angular knows which injector to use to give you dependencies.
+
+Angular DI can only work when Angular is actively running your code inside its control — for example:
+
+Inside a component constructor
+
+Inside a service constructor
+
+Inside a factory function
+
+Inside an inject() call used during component setup (not runtime logic)
+
+If you call inject() outside Angular’s control (for example, inside a random function or callback), Angular throws:
+```
+NG0203: inject() must be called from an injection context.
+```
+
+```
+
+import { Component, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  template: `<p>Check console</p>`
+})
+export class DemoComponent {
+  // We’re inside Angular’s injection context
+  http = inject(HttpClient);
+
+  constructor() {
+    console.log('Http injected:', this.http);
+  }
+}
+
+
+```
+✅ How to Use runInInjectionContext()
+
+Angular 16+ introduced a way to create your own injection context manually.
+
+You can wrap your code in an Angular-controlled context:
+```
+import { inject, runInInjectionContext, EnvironmentInjector } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+export class MyService {
+  constructor(private injector: EnvironmentInjector) {
+    runInInjectionContext(this.injector, () => {
+      const http = inject(HttpClient); // ✅ Works here
+      console.log('HttpClient inside custom context:', http);
+    });
+  }
+}
+```
+🧩 Analogy (Layman Terms)
+
+Imagine Angular’s DI system as a vending machine (injector).
+
+The injection context is when you’re standing in front of that machine.
+
+If you’re outside the building (no machine nearby), you can’t get snacks (dependencies).
+
+runInInjectionContext() is like setting up a temporary machine wherever you are.
+
+✅ In Short
+
+Term	Meaning	Example
+
+**inject()**	Fetch a dependency in DI context	const http = inject(HttpClient)
+
+**Injection Context**	Environment where Angular knows which injector to use	Component, Service, etc.
+
+**runInInjectionContext()**	Manually create DI context	Useful in utility code
 
 **INPUT PROPERTY**
 
