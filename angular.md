@@ -1,4 +1,4 @@
-***component***
+***COMPONENT***
 
 Every component has a few main parts:
 
@@ -44,7 +44,7 @@ Selector → how the component appears in HTML  <user-profile></user-profile>
 Class Name → the TypeScript class behind the component
 
 They look similar only because of Angular coding conventions, **not because Angular requires them to match**.
-
+```
  ┌────────────────────────────────────────────────────────┐
  │                   Your Code (Developer)                │
  ├────────────────────────────────────────────────────────┤
@@ -59,8 +59,10 @@ They look similar only because of Angular coding conventions, **not because Angu
  │   title = 'Hello Angular';                             │
  │ }                                                      │
  └────────────────────────────────────────────────────────┘
+
                 │
                 ▼
+  
  ┌────────────────────────────────────────────────────────┐
  │             Step 1️⃣  Decorator Function                │
  │ The @Component function runs at compile time.           │
@@ -77,6 +79,7 @@ They look similar only because of Angular coding conventions, **not because Angu
  │ → Essentially stores:                                   │
  │   { selector: 'app-hello', template: '<h1>...</h1>' }   │
  └────────────────────────────────────────────────────────┘
+
                 │
                 ▼
  ┌────────────────────────────────────────────────────────┐
@@ -116,8 +119,9 @@ They look similar only because of Angular coding conventions, **not because Angu
  │                                                        │
  │ Component rendered using compiled metadata and logic.  │
  └────────────────────────────────────────────────────────┘
+```
 
-
+```
 Your Code (.ts, .html, .css)
            │
            ▼
@@ -133,6 +137,8 @@ Your Code (.ts, .html, .css)
            │
            ▼
    Browser Loads → index.html + main.js
+
+```
 
 **SIGNAL**
 
@@ -150,6 +156,225 @@ firstName.set('Jaime');
 // You can also use the `update` method to change the value
 // based on the previous value.
 firstName.update(name => name.toUpperCase());
+
+```
+
+**COMPUTED**
+
+A computed signal is read-only; 
+
+it does not have a set or an update method. 
+
+Instead, the value of the computed signal automatically changes when any of the signals it reads change:
+
+
+```
+import {signal, computed} from '@angular/core';
+const firstName = signal('Morgan');
+const firstNameCapitalized = computed(() => firstName().toUpperCase());
+console.log(firstNameCapitalized()); // MORGAN
+firstName.set('Jaime');
+console.log(firstNameCapitalized()); // JAIME
+```
+**Reading signals in OnPush components**
+
+When you read a signal within an OnPush component's template, Angular tracks the signal as a dependency of that component.
+
+When the value of that signal changes, Angular automatically marks the component to ensure it gets updated the next time change detection runs.
+
+**EFFECT**
+
+An effect is an operation that runs whenever one or more signal values change. You can create an effect with the effect function:
+
+```
+effect(() => {
+  console.log(`The current count is: ${count()}`);
+});
+```
+
+Effects always run at least once.
+
+When an effect runs, it tracks any signal value reads. 
+
+Whenever any of these signal values change, the effect runs again. 
+
+**Use cases**
+Logging data being displayed and when it changes, either for analytics or as a debugging tool.
+
+Keeping data in sync with window.localStorage.
+
+Adding custom DOM behavior that can't be expressed with template syntax.
+
+Performing custom rendering to a <canvas>, charting library, or other third party UI library.
+
+
+**DYNAMIC TEMPLATES**
+
+dynamic binding
+
+double curly-braces
+
+```
+@Component({
+  selector: 'user-profile',
+  template:
+`<h1>Profile for {{userName()}}</h1>`,  //values
+`<button [disabled]="!isValidUserId()">Save changes</button>`, //properties
+`<ul [attr.role]="listRole()">` //attributes
+})
+export class UserProfile {
+  userName = signal('pro_programmer_123');
+}
+```
+**Property Binding**
+
+```
+@Component({
+  selector: 'app-root',
+  styleUrls: ['app.css'],
+  template: `
+    <div [contentEditable]="isEditable"></div>
+  `,
+})
+export class App {
+  isEditable = true;
+}
+
+```
+
+**USER INTERACTION**
+```
+@Component({
+  /*...*/
+  // Add an 'click' event handler that calls the `cancelSubscription` method.
+  template: `<button (click)="cancelSubscription($event)">Cancel subscription</button>`,
+})
+export class UserProfile {
+  /* ... */
+  cancelSubscription(event: Event) { /* Your event handling code goes here. */  }
+}
+
+```
+** IF & ELSE **
+
+```
+<h1>User profile</h1>
+@if (isAdmin()) {
+  <h2>Admin settings</h2>
+  <!-- ... -->
+} @else {
+  <h2>User settings</h2>
+  <!-- ... -->
+}
+```
+
+** FOR **
+```
+<h1>User profile</h1>
+<ul class="user-badge-list">
+  @for (badge of badges(); track badge; let i = $index) {
+    <li class="user-badge">{{i}} {{badge}}</li>
+  }
+</ul>
+```
+
+
+⚙️ 1. Where @if and @else Can Be Used
+👉 @if, @else, @for, and @switch are template syntax, not TypeScript code. 
+Used in html only
+
+
+**Variable |	Meaning**
+$count - 	Number of items in a collection iterated over
+
+$index -	Index of the current row
+
+$first -	Whether the current row is the first row
+
+$last	- Whether the current row is the last row
+
+$even	- Whether the current row index is even
+
+$odd	- Whether the current row index is odd
+
+```
+@Component({
+  selector: 'app-root',
+  template: `
+  @for(user of users;track user.id) {
+  <p>{{user.name}}</p>
+  }
+  `,
+})
+export class App {
+  users = [{id: 0, name: 'Sarah'}, {id: 1, name: 'Amy'}, {id: 2, name: 'Rachel'}, {id: 3, name: 'Jessica'}, {id: 4, name: 'Poornima'}];
+}
+
+```
+**Dependency Injection**
+
+Reuse code and control behaviors across your application and tests.
+
+**SERVICES**
+Services are reusable pieces of code that can be injected.
+
+**A TypeScript decorator** that declares the class as an Angular service via **@Injectable** and allows you to define what part of the application can access the service via the **providedIn** property (which is typically **'root'**) to allow a service to be accessed anywhere within the application.
+**A TypeScript class** that defines the desired code that will be accessible when the service is injected
+
+```
+import {Injectable} from '@angular/core';
+@Injectable({providedIn: 'root'})
+export class Calculator {
+  add(x: number, y: number) {
+    return x + y;
+  }
+}
+```
+**How to use a service**
+
+```
+import { Component, inject } from '@angular/core';
+import { Calculator } from './calculator';
+@Component({
+  selector: 'app-receipt',
+  template: `<h1>The total is {{ totalCost }}</h1>`,
+})
+export class Receipt {
+  private calculator = inject(Calculator);
+  totalCost = this.calculator.add(50, 25);
+}
+
+```
+
+**INPUT PROPERTY**
+
+send information from a parent component to a child component.
+
+```
+--Child COmponent-- 
+import {Component, input} from '@angular/core';
+
+@Component({
+  selector: 'app-user',
+  template: `
+    <p>The user's name is {{name()}}</p>
+  `,
+})
+export class User {
+  name = input<String>();
+}
+
+--Parent Component --
+import {User} from './user';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <app-user name="Simran"/>
+  `,
+  imports: [User],
+})
+export class App {}
 
 ```
 
