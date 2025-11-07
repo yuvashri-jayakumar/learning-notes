@@ -1,31 +1,4 @@
-```
-
-new-app/
- ├─ node_modules/
- ├─ src/
- │   ├─ app/
- │   │   ├─ app.component.css
- │   │   ├─ app.component.html
- │   │   ├─ app.component.spec.ts
- │   │   ├─ app.component.ts
- │   │   └─ app.module.ts
- │   ├─ assets/
- │   ├─ environments/
- │   │   ├─ environment.development.ts
- │   │   └─ environment.ts
- │   ├─ index.html
- │   ├─ main.ts
- │   ├─ styles.css
- │   └─ favicon.ico
- ├─ .editorconfig
- ├─ .gitignore
- ├─ angular.json
- ├─ package.json
- ├─ tsconfig.json
- ├─ tsconfig.app.json
- ├─ tsconfig.spec.json
- └─ README.md
-```
+<img width="425" height="720" alt="image" src="https://github.com/user-attachments/assets/2b5b9b81-9214-4c7c-8533-838e3e37fbee" />
 
 1. package.json
 
@@ -41,7 +14,7 @@ scripts → shortcuts like npm start.
 
 Angular CLI’s configuration file — controls how the app is built, served, and deployed.
 
-3. tsconfig.json
+3. tsconfig.json /tsconfig.app.json/ tsconfig.spec.json
 
 Base TypeScript configuration.
 
@@ -99,37 +72,16 @@ environment.ts – for production build
 environment.development.ts – for local dev
 
 🧠 Step 4: Inside app/ folder (Core of your app)
-1. app.module.ts (Root Module)
 
-If you created the project with standalone: false, you get this file:
-```
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppComponent } from './app.component';
-
-@NgModule({
-  declarations: [AppComponent],
-  imports: [BrowserModule],
-  bootstrap: [AppComponent]
-})
-export class AppModule {}
-```
-
-@NgModule bundles components, directives, and services.
-
-bootstrap tells Angular which component to start with.
-
-If you created it with --standalone, then Angular skips the module and bootstraps directly from AppComponent.
-
-2. app.component.ts
+2. app.ts
 
 ```
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  templateUrl: './app.html',
+  styleUrls: ['./app.css']
 })
 export class AppComponent {
   title = 'new-app';
@@ -138,19 +90,19 @@ export class AppComponent {
 ```
 Defines a component using @Component.
 
-Has a selector (app-root) used in index.html.
+Has a selector (app-root) used in index.html. Always selector name should have 2 words to avoid clashes with keywords.
 
 Controls data and behavior shown in the UI.
 
-3. app.component.html
+3. app.html
 
 The template that Angular renders.
 
-4. app.component.css
+4. app.css
 
 Styles specific to this component.
 
-5. app.component.spec.ts
+5. app.spec.ts
 
 Test file (using Jasmine/Karma).
 
