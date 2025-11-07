@@ -1,3 +1,25 @@
+**ANGULAR**
+
+1. JS Framework to build application (interactive, modern web UI)
+   
+2. contains a lot of tools - build,test and depoy (CLI, debugging tools, plugin) 
+ 
+**Why Angular**
+
+1. declarative code = uses states and no need to find DOM object and udpate. Angular take care of it
+
+2. OOPS - classes, 
+
+3. Use Typescript
+
+4. Components to separate concerns
+
+**Main Blocks**
+
+1. components
+2. Services
+3. Modules
+
 ***COMPONENT***
 
 Every component has a few main parts:
@@ -221,7 +243,80 @@ count changes → effect re-runs automatically
 Component destroyed → effect is cleaned up (because injector provided)
 
 ```
+```
+import _ from 'lodash';
+const data = signal(['test'], {equal: _.isEqual});
+// Even though this is a different array instance, the deep equality
+// function will consider the values to be equal, and the signal won't
+// trigger any updates.
+data.set(['test']);
+```
+By default, Angular checks equality using **reference equality** (===).
+That means:
 
+const arr = ['test'];
+data.set(arr);
+data.set(arr); // no trigger, same reference
+data.set(['test']); // triggers, different array reference
+
+
+Even though ['test'] looks the same, Angular would treat it as a new value — because it’s a new array instance.
+
+To prevent unnecessary updates (when the contents are equal), you can pass a custom equality comparison function.
+
+🔍 3. What _.isEqual Does
+
+_.isEqual is a Lodash deep equality function.
+
+_.isEqual(a, b)
+
+returns true if two values are deeply equal (arrays, objects, nested structures, etc.), not just reference equal.
+
+So { equal: _.isEqual } tells Angular:
+
+**“Only treat the signal as changed if the new value is not deeply equal to the old one.”**
+
+**Reading without tracking dependencies**
+
+```
+effect(() => {
+  console.log(`User set to ${currentUser()} and the counter is ${untracked(counter)}`);
+});
+```
+
+**Effect cleanup functions**
+
+```
+effect((onCleanup) => {
+  const user = currentUser();
+  const timer = setTimeout(() => {
+    console.log(`1 second ago, the user became ${user}`);
+  }, 1000);
+  onCleanup(() => {
+    clearTimeout(timer);
+  });
+});
+```
+**LINKED SIGNAL**
+
+linkedSignal works similarly to signal with one key difference— instead of passing a default value, you pass a computation function, just like computed. When the value of the computation changes, the value of the linkedSignal changes to the computation result. This helps ensure that the linkedSignal always has a valid value.
+
+```
+const shippingOptions = signal(['Ground', 'Air', 'Sea']);
+const selectedOption = linkedSignal(() => shippingOptions()[0]);
+console.log(selectedOption()); // 'Ground'
+selectedOption.set(shippingOptions()[2]);
+console.log(selectedOption()); // 'Sea'
+shippingOptions.set(['Email', 'Will Call', 'Postal service']);
+console.log(selectedOption()); // 'Email'
+```
+```
+linkedSignal<TSource, TValue>({
+  source: Signal<TSource>,
+  computation: (sourceValue: TSource, previous?: LinkedSignalValue<TValue>) => TValue,
+})
+
+```
 **DYNAMIC TEMPLATES**
 
 dynamic binding
