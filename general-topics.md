@@ -244,3 +244,87 @@ bootstrapApplication(AppComponent, {
 
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/01ae7ac4-dc2c-443c-96f7-035c6a09fc29" />
 
+============================================================================================================================================
+**@Input vs signal input**
+
+**🧩 Overview**
+
+
+| Feature                           | `@Input()`                | Signal Inputs (`input()`)      |
+| --------------------------------- | ------------------------- | ------------------------------ |
+| Introduced in                     | Angular (from start)      | Angular 17                     |
+| Reactive?                         | ❌ No (manual tracking)    | ✅ Yes (reactive signal)        |
+| Type                              | Property decorator        | Function that returns a signal |
+| Updates trigger change detection? | ✅ Yes                     | ✅ Yes                          |
+| Works with Signals API?           | ❌ No                      | ✅ Fully integrated             |
+| Syntax                            | `@Input() prop!: string;` | `prop = input<string>();`      |
+
+
+**🧠 1️⃣ Traditional @Input()**
+
+@Input() is a decorator that tells Angular a property should receive data from a parent component to a child component.
+
+🔹 Child Component — child.component.ts
+```
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-child',
+  template: `<h3>Welcome, {{ name }}</h3>`
+})
+export class ChildComponent {
+  @Input() name!: string;  // <-- decorator used here
+}
+```
+🔹 Parent Component — parent.component.html
+```
+<app-child [name]="userName"></app-child>
+```
+🔹 Parent Component — parent.component.ts
+```
+export class ParentComponent {
+  userName = 'Yuva';
+}
+```
+
+**🧠 2️⃣ Signal-based Inputs (input())**
+
+Angular 17+ introduced signal inputs that make component inputs reactive and signal-compatible.
+
+You import input() from @angular/core.
+
+Example:
+```
+import { Component, input } from '@angular/core';
+
+@Component({
+  selector: 'user-card',
+  template: `<p>User: {{ name() }}</p>`
+})
+export class UserCardComponent {
+  name = input<string>(); // 👈 a signal input
+}
+
+Usage (same as before):
+<user-card [name]="username"></user-card>
+```
+
+✅ Now, inside your component:
+
+name is a signal.
+
+You can react to its changes directly, without lifecycle hooks.
+
+| Use Case                            | Use `@Input()` | Use `input()` (signal input) |
+| ----------------------------------- | -------------- | ---------------------------- |
+| Legacy / existing apps              | ✅ Yes          | ❌ Optional                   |
+| Using Signals for reactivity        | ❌ No           | ✅ Yes                        |
+| Need computed or effect-based logic | ❌ Harder       | ✅ Native support             |
+| Want fine-grained updates           | ❌ No           | ✅ Yes                        |
+
+
+| Concept                | `@Input()`                   | `input()`             |
+| ---------------------- | ---------------------------- | --------------------- |
+| Reactivity             | Imperative (lifecycle hooks) | Declarative (signals) |
+| Detect changes         | `ngOnChanges()`              | Automatic via signals |
+| Use in computed/effect | ❌ Not supported              | ✅ Yes                 |
