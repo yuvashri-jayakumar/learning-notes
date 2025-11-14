@@ -328,3 +328,15 @@ You can react to its changes directly, without lifecycle hooks.
 | Reactivity             | Imperative (lifecycle hooks) | Declarative (signals) |
 | Detect changes         | `ngOnChanges()`              | Automatic via signals |
 | Use in computed/effect | ❌ Not supported              | ✅ Yes                 |
+
+
+
+**push vs unshift**
+
+Push - Add elements to array at end
+Unshift - Add array elements to start
+
+**Content Projection**
+
+**<ng-content/>** to wrap another component html in shared component. 
+This will not replace the child html component.ninstead, it will use the child component just like that. 
