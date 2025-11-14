@@ -568,4 +568,12 @@ export class App {}
 
 ```
 
+**DIRECTIVES**
+Direcivs doesnt have any templates. 
+Components are directives. With templates.
+
+ngModel directive - Used for 2 way binding. 
+
+<img width="927" height="394" alt="image" src="https://github.com/user-attachments/assets/df4edd31-2d93-4ec9-adf2-94117d28f4a1" />
+
 
